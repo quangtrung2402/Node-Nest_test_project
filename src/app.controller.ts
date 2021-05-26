@@ -1,6 +1,7 @@
-import { Controller, Get, Req, Redirect, Param } from '@nestjs/common';
+import { Controller, Get, Req, Redirect, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Request } from 'express';
+import { UpdateCatDto } from './app.dto';
 
 @Controller()
 export class AppController {
@@ -25,14 +26,23 @@ export class CatsController {
     return 'This action returns all cats';
   }
   
-  // @Get('google')
-  // @Redirect('https://google.com', 301)
-  // getDocs() {}
+  @Get('google')
+  @Redirect('https://google.com', 301)
+  getDocs() {}
   
   @Get(':id')
-  findOne(@Param() params): string {
-    console.log(params.id);
-    return `This action returns a #${params.id} cat`;
+  findOne(@Param('id') id: string) {
+    return `This action returns a #${id} cat`;
+  }
+  
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    return `This action updates a #${id} cat`;
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return `This action removes a #${id} cat`;
   }
 }
 
