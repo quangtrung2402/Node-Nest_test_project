@@ -1,7 +1,8 @@
 import { Controller, Get, Req, Redirect, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService, CatService } from './app.service';
 import { Request } from 'express';
 import { UpdateCatDto } from './app.dto';
+import { Cat } from './cat.interface';
 
 @Controller()
 export class AppController {
@@ -14,7 +15,9 @@ export class AppController {
 }
 
 @Controller('cats')
-export class CatsController {
+export class CatController {
+  constructor(private readonly service: CatService){}
+  
   @Get()
   find(@Req() request: Request): string {
     console.log(request.url)
@@ -22,8 +25,8 @@ export class CatsController {
   }
   
   @Get('all')
-  findAll(): string {
-    return 'This action returns all cats';
+  async findAll(): Promise<Cat[]> {
+    return this.service.findAll();
   }
   
   @Get('google')
@@ -39,7 +42,7 @@ export class CatsController {
   update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
     return `This action updates a #${id} cat`;
   }
-
+  
   @Delete(':id')
   remove(@Param('id') id: string) {
     return `This action removes a #${id} cat`;
