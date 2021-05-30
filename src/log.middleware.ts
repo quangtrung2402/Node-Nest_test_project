@@ -11,3 +11,8 @@ export class LoggerMiddleware implements NestMiddleware {
     // console.log(res);
   }
 }
+
+export function logger(req: Request, res: Response, next: NextFunction) {
+  console.log(`Request... at`, Date());
+  next();
+};

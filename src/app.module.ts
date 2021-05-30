@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { RouteInfo } from '@nestjs/common/interfaces';
 import { AdminController, AppController, CatController } from './app.controller';
 import { AppService, CatService } from './app.service';
-import { LoggerMiddleware } from './log.middleware';
+import { logger, LoggerMiddleware } from './log.middleware';
 
 @Module({
   imports: [],
@@ -15,5 +15,8 @@ export class AppModule implements NestModule{
     .forRoutes(
       { path: 'cats', method: RequestMethod.GET },
       { path: 'cats', method: RequestMethod.POST });
+      
+      consumer.apply(logger).forRoutes({path:'',method:RequestMethod.ALL});
     }
+    
   }
