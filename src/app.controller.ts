@@ -1,8 +1,9 @@
-import { Controller, Get, Req, Redirect, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Req, Redirect, Body, Put, Param, Delete, HttpException, HttpStatus, BadRequestException, UseFilters } from '@nestjs/common';
 import { AppService, CatService } from './app.service';
 import { Request } from 'express';
 import { UpdateCatDto } from './app.dto';
 import { Cat } from './cat.interface';
+import { HttpExceptionFilter } from './http-exception.filter';
 
 @Controller()
 export class AppController {
@@ -19,13 +20,19 @@ export class CatController {
   constructor(private readonly service: CatService){}
   
   @Get()
+  @UseFilters(HttpExceptionFilter)
   find(@Req() request: Request): string {
     console.log(request.url)
+    throw new HttpException({
+      status: HttpStatus.FORBIDDEN,
+      error: 'This is a custom message',
+    }, HttpStatus.FORBIDDEN);
     return `This action returns a cat.<br>Request to ${request.url} from ${request.ip}`;
   }
   
   @Get('all')
   async findAll(): Promise<Cat[]> {
+    throw new BadRequestException;
     return this.service.findAll();
   }
   
