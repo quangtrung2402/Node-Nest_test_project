@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Redirect, Body, Put, Param, Delete, HttpException, HttpStatus, BadRequestException, UseFilters } from '@nestjs/common';
+import { Controller, Get, Req, Redirect, Body, Put, Param, Delete, HttpException, HttpStatus, UseFilters, Query, ParseIntPipe } from '@nestjs/common';
 import { AppService, CatService } from './app.service';
 import { Request } from 'express';
 import { UpdateCatDto } from './app.dto';
@@ -31,9 +31,8 @@ export class CatController {
   }
   
   @Get('all')
-  async findAll(): Promise<Cat[]> {
-    throw new BadRequestException;
-    return this.service.findAll();
+  async findAll(@Query('id', ParseIntPipe) id: number) {
+    return this.service.find(id);
   }
   
   @Get('google')
@@ -41,25 +40,28 @@ export class CatController {
   getDocs() {}
   
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `This action returns a #${id} cat`;
+  findOne(
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }))
+    id: number
+    ) {
+      return `This action returns a #${id} cat`;
+    }
+    
+    @Put(':id')
+    update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+      return `This action updates a #${id} cat`;
+    }
+    
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+      return `This action removes a #${id} cat`;
+    }
   }
   
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return `This action updates a #${id} cat`;
+  @Controller({ host: 'admin.localhost' })
+  export class AdminController {
+    @Get()
+    index(): string {
+      return 'Admin page';
+    }
   }
-  
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return `This action removes a #${id} cat`;
-  }
-}
-
-@Controller({ host: 'admin.localhost' })
-export class AdminController {
-  @Get()
-  index(): string {
-    return 'Admin page';
-  }
-}
